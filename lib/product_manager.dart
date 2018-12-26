@@ -19,9 +19,9 @@ class _ProductManagerState extends State<ProductManager> {
     super.initState();
     _products.add(widget.startingProduct);
   }
-  void _addProduct(String product_name){
+  void _addProduct(String productName){
     setState(() {
-      _products.add(product_name);
+      _products.add(productName);
     });
   }
 
@@ -30,9 +30,8 @@ class _ProductManagerState extends State<ProductManager> {
     return Column(children:[ Container(
       margin: EdgeInsets.all(10.0),
       child: ProductControl(_addProduct),
-
     ),
-      Product(_products),
+     Expanded(child: Product(_products)),
     ]);
   }
 }
