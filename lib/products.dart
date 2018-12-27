@@ -4,8 +4,9 @@ import './pages/product.dart';
 
 class Product extends StatelessWidget {
   final List<Map<String, String>> products;
+  final Function deleteProduct;
 
-  Product(this.products);
+  Product(this.products,{this.deleteProduct});
 
   Widget _buildProductItem(BuildContext context, int index) {
     return Card(
@@ -18,13 +19,17 @@ class Product extends StatelessWidget {
             children: <Widget>[
               FlatButton(
                 child: Text("Details"),
-                onPressed: () => Navigator.push(
+                onPressed: () => Navigator.push<bool>(
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext context) => ProductPage(
                             products[index]["title"], products[index]["image"]),
                       ),
-                    ),
+                    ).then((bool value){
+                      if(value){
+                        deleteProduct(index);
+                      }
+                }),
               )
             ],
           )
