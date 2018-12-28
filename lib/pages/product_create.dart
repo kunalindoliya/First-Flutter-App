@@ -13,9 +13,9 @@ class ProductCreate extends StatefulWidget {
 }
 
 class _ProductCreateState extends State<ProductCreate> {
-  String title;
-  String description;
-  double price;
+  String _title;
+  String _description;
+  double _price;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,7 +26,7 @@ class _ProductCreateState extends State<ProductCreate> {
             decoration: InputDecoration(labelText: 'Product Title'),
             onChanged: (String value) {
               setState(() {
-                title = value;
+                _title = value;
               });
             },
           ),
@@ -35,7 +35,7 @@ class _ProductCreateState extends State<ProductCreate> {
             maxLines: 4,
             onChanged: (String value) {
               setState(() {
-                description = value;
+                _description = value;
               });
             },
           ),
@@ -44,21 +44,25 @@ class _ProductCreateState extends State<ProductCreate> {
             keyboardType: TextInputType.number,
             onChanged: (String value) {
               setState(() {
-                price = double.parse(value);
+                _price = double.parse(value);
               });
             },
           ),
+
           Center(
             child: RaisedButton(
+              color: Theme.of(context).accentColor,
+              textColor: Colors.white,
               child: Text("Save"),
               onPressed: () {
                 final Map<String,dynamic> product={
-                  'title':title,
-                  'description':description,
-                  'price':price,
+                  'title':_title,
+                  'description':_description,
+                  'price':_price,
                   'image':'assets/food.jpg'
                 };
                 widget.addProduct(product);
+                Navigator.pushReplacementNamed(context, '/home');
               },
             ),
           )

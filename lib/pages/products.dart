@@ -26,7 +26,7 @@ class ProductsPage extends StatelessWidget {
         ),
       ),
       appBar: AppBar(
-        title: Text('My APP'),
+        title: Text('All Products'),
       ),
       body: ProductManager(products),
     );
