@@ -36,7 +36,9 @@ class _MyAppState extends State<MyApp> {
           //brightness: Brightness.dark, for dark color
           brightness: Brightness.light,
           primarySwatch: Colors.deepOrange,
-          accentColor: Colors.deepPurple),
+          accentColor: Colors.deepPurple
+          //fontFamily: 'Oswald'
+        ),
       //home: AuthPage(),
       routes: {
         "/": (BuildContext context) =>
@@ -51,7 +53,7 @@ class _MyAppState extends State<MyApp> {
           final int index = int.parse(pathElements[2]);
           return MaterialPageRoute<bool>(
             builder: (BuildContext context) =>
-                ProductPage(products[index]["title"], products[index]["image"]),
+                ProductPage(products[index]),
           );
         }
       },
