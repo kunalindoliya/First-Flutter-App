@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../product_manager.dart';
+import '../widgets/products/products.dart';
 
 class ProductsPage extends StatelessWidget {
   final List<Map<String,dynamic>> products;
@@ -30,7 +30,7 @@ class ProductsPage extends StatelessWidget {
         title: Text('All Products'),
         actions: <Widget>[IconButton(icon: Icon(Icons.favorite), onPressed: (){})],
       ),
-      body: ProductManager(products),
+      body: Product(products),
     );
   }
 }

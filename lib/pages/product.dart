@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../widgets/products/address_tag.dart';
+
 class ProductPage extends StatelessWidget {
   final Map<String, dynamic> _product;
 
@@ -103,19 +105,7 @@ class ProductPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Theme.of(context).backgroundColor,
-                            width: 2.0),
-                        borderRadius: BorderRadius.circular(4.0)),
-                    child: Text(
-                      "Delhi, India",
-                      style: TextStyle(
-                          fontSize: 18.0, fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                 AddressTag("Delhi,India")
                 ],
               ),
               Container(
