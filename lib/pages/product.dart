@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../widgets/products/address_tag.dart';
+import '../widgets/products/price_tag.dart';
 
 class ProductPage extends StatelessWidget {
   final Map<String, dynamic> _product;
@@ -64,17 +65,7 @@ class ProductPage extends StatelessWidget {
                       SizedBox(
                         width: 8.0,
                       ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 6.0, vertical: 2.5),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).accentColor,
-                            borderRadius: BorderRadius.circular(5.0)),
-                        child: Text(
-                          '\$${_product['price'].toString()}',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
+                     PriceTag(_product['price'].toString())
                     ],
                   )),
               Container(
