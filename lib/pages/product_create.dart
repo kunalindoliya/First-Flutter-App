@@ -19,6 +19,10 @@ class _ProductCreateState extends State<ProductCreate> {
   final GlobalKey<FormState> _formKey=GlobalKey<FormState>();
   Widget _buildTitleTextField(){
     return TextFormField(
+      validator: (String value){
+        if(value.isEmpty || value.length <5)
+          return 'Title is required and the lenght should be 5+ characters';
+      },
       decoration: InputDecoration(labelText: 'Product Title'),
       onSaved: (String value){
         setState(() {
@@ -31,6 +35,10 @@ class _ProductCreateState extends State<ProductCreate> {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Product Description'),
       maxLines: 4,
+      validator: (String value){
+        if(value.isEmpty || value.length <10)
+          return 'Description is required and the lenght should be 5+ characters';
+      },
       onSaved: (String value){
         setState(() {
           _description=value;
@@ -42,6 +50,10 @@ class _ProductCreateState extends State<ProductCreate> {
     return  TextFormField(
       decoration: InputDecoration(labelText: 'Product Price'),
       keyboardType: TextInputType.number,
+      validator: (String value){
+        if(value.isEmpty || !RegExp(r'^(?:[1-9]\d*|0)?(?:[.,]\d+)?$').hasMatch(value))
+          return 'Price is required and it should be a number';
+      },
       onSaved: (String value){
         setState(() {
           _price=double.parse(value);
@@ -51,7 +63,11 @@ class _ProductCreateState extends State<ProductCreate> {
   }
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: (){
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child:Container(
       margin: EdgeInsets.all(10.0),
       child:Form(
         key: _formKey,
@@ -66,6 +82,9 @@ class _ProductCreateState extends State<ProductCreate> {
               textColor: Colors.white,
               child: Text("Save"),
               onPressed: () {
+                if(!_formKey.currentState.validate()){
+                  return;
+                }
                 _formKey.currentState.save();
                 final Map<String,dynamic> product={
                   'title':_title,
@@ -81,6 +100,7 @@ class _ProductCreateState extends State<ProductCreate> {
         ],
       ),
       ),
+    ),
     );
   }
 }
