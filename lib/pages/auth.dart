@@ -8,48 +8,55 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  String _email;
-  String _password;
-  bool _acceptTerms = false;
+  final Map<String,dynamic> _formData={
+    'email':null,
+    'password':null,
+    'acceptTerms':false
+  };
+  final GlobalKey<FormState> _formKey=GlobalKey<FormState>();
 
-  Widget _buildEmailTextField(){
-    return   TextField(
+  Widget _buildEmailTextField() {
+    return TextFormField(
       decoration: InputDecoration(
-          labelText: 'Email',
-          filled: true,
-          fillColor: Colors.blue),
+          labelText: 'Email', filled: true, fillColor: Colors.blue),
       keyboardType: TextInputType.emailAddress,
-      onChanged: (String value) {
-        setState(() {
-          _email = value;
-        });
+      validator: (String value) {
+        if (value.isEmpty ||
+            !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                .hasMatch(value)) return 'Enter valid Email';
+      },
+      onSaved: (String value) {
+        _formData['email'] = value;
       },
     );
   }
-  Widget _buildPasswordTextField(){
-    return TextField(
+
+  Widget _buildPasswordTextField() {
+    return TextFormField(
       decoration: InputDecoration(
-          labelText: 'Password',
-          filled: true,
-          fillColor: Colors.blue),
+          labelText: 'Password', filled: true, fillColor: Colors.blue),
       obscureText: true,
-      onChanged: (String value) {
-        setState(() {
-          _password = value;
-        });
+      validator: (String value) {
+        if(value.isEmpty)
+          return 'Password cannot be empty';
+      },
+      onSaved: (String value) {
+        _formData['password'] = value;
       },
     );
   }
-  Widget _buildSwitchTile(){
-    return  SwitchListTile(
-        value: _acceptTerms,
+
+  Widget _buildSwitchTile() {
+    return SwitchListTile(
+        value: _formData['acceptTerms'],
         title: Text("Accept Terms"),
         onChanged: (bool value) {
           setState(() {
-            _acceptTerms = value;
+            _formData['acceptTerms'] = value;
           });
         });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,19 +65,23 @@ class _AuthPageState extends State<AuthPage> {
         ),
         body: Container(
           decoration: BoxDecoration(
-              image: DecorationImage(
-                  fit: BoxFit.cover,
-                  /*colorFilter: ColorFilter.mode(
+            image: DecorationImage(
+                fit: BoxFit.cover,
+                /*colorFilter: ColorFilter.mode(
                       Colors.black.withOpacity(0.4), BlendMode.dstATop),*/
-                  image: AssetImage('assets/background.jpg')),
+                image: AssetImage('assets/background.jpg')),
           ),
           padding: EdgeInsets.all(10.0),
           child: Center(
             child: SingleChildScrollView(
-              child: Column(
+              child: Form(
+                key: _formKey,
+                child:Column(
                 children: <Widget>[
                   _buildEmailTextField(),
-                  SizedBox(height: 10.0,),
+                  SizedBox(
+                    height: 10.0,
+                  ),
                   _buildPasswordTextField(),
                   _buildSwitchTile(),
                   Center(
@@ -78,14 +89,19 @@ class _AuthPageState extends State<AuthPage> {
                       color: Colors.orange,
                       child: Text("LOGIN"),
                       onPressed: () {
+                        if(!_formKey.currentState.validate() || !_formData['acceptTerms'])
+                          return;
+                        _formKey.currentState.save();
                         Navigator.pushReplacementNamed(context, '/home');
                       },
                     ),
                   ),
                 ],
               ),
+              ),
             ),
           ),
-        ));
+        ),
+    );
   }
 }
