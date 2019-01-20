@@ -5,8 +5,9 @@ import './product_edit.dart';
 class ProductList extends StatelessWidget {
   final List<Map<String, dynamic>> products;
   final Function updateProduct;
+  final Function deleteProduct;
 
-  ProductList(this.products, this.updateProduct);
+  ProductList(this.products, this.updateProduct,this.deleteProduct);
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +16,13 @@ class ProductList extends StatelessWidget {
         return Dismissible(
           key: Key(products[index]['title']),
           background: Container(color: Colors.red,),
+          onDismissed: (DismissDirection direction){
+            if(direction==DismissDirection.endToStart){
+              deleteProduct(index);
+            }else if(direction==DismissDirection.startToEnd){
+              print("Start to end");
+            }
+          },
           child: Column(
             children: <Widget>[
               ListTile(
