@@ -6,9 +6,12 @@ import '../widgets/products/address_tag.dart';
 import '../widgets/products/price_tag.dart';
 
 class ProductPage extends StatelessWidget {
-  final Map<String, dynamic> _product;
+  final String title;
+  final String imageUrl;
+  final double price;
+  final String description;
 
-  ProductPage(this._product);
+  ProductPage(this.title, this.imageUrl, this.price, this.description);
 
   _showWarningDialog(BuildContext context) {
     showDialog(
@@ -45,18 +48,18 @@ class ProductPage extends StatelessWidget {
       },
       child: Scaffold(
           appBar: AppBar(
-            title: Text(_product['title']),
+            title: Text(title),
           ),
           body: Column(
             children: <Widget>[
-              Image.asset(_product['image']),
+              Image.asset(imageUrl),
               Container(
                   margin: EdgeInsets.only(top: 10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
                       Text(
-                        _product["title"],
+                        title,
                         style: TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
@@ -65,7 +68,7 @@ class ProductPage extends StatelessWidget {
                       SizedBox(
                         width: 8.0,
                       ),
-                     PriceTag(_product['price'].toString())
+                     PriceTag(price.toString())
                     ],
                   )),
               Container(
@@ -84,7 +87,7 @@ class ProductPage extends StatelessWidget {
                       width: 20.0,
                     ),
                     Text(
-                      _product['description'],
+                      description,
                       style: TextStyle(
                           fontSize: 22.0,
                           fontWeight: FontWeight.bold,

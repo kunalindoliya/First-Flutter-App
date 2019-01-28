@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../models/product.dart';
+
 class ProductEdit extends StatefulWidget {
   final Function addProduct;
   final Function updateProduct;
-  final Map<String, dynamic> product;
+  final Product product;
   final int productIndex;
 
-  ProductEdit({this.addProduct, this.updateProduct, this.product,this.productIndex});
+  ProductEdit(
+      {this.addProduct, this.updateProduct, this.product, this.productIndex});
 
   @override
   State<StatefulWidget> createState() {
@@ -25,7 +28,7 @@ class _ProductEditState extends State<ProductEdit> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Widget _buildTitleTextField() {
     return TextFormField(
-        initialValue: widget.product == null ? '' : widget.product['title'],
+      initialValue: widget.product == null ? '' : widget.product.title,
       validator: (String value) {
         if (value.isEmpty || value.length < 5)
           return 'Title is required and the lenght should be 5+ characters';
@@ -41,8 +44,7 @@ class _ProductEditState extends State<ProductEdit> {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Product Description'),
       maxLines: 4,
-        initialValue:
-        widget.product == null ? '' : widget.product['description'],
+      initialValue: widget.product == null ? '' : widget.product.description,
       validator: (String value) {
         if (value.isEmpty || value.length < 10)
           return 'Description is required and the lenght should be 5+ characters';
@@ -58,7 +60,7 @@ class _ProductEditState extends State<ProductEdit> {
       decoration: InputDecoration(labelText: 'Product Price'),
       keyboardType: TextInputType.number,
       initialValue:
-          widget.product == null ? '' : widget.product['price'].toString(),
+          widget.product == null ? '' : widget.product.price.toString(),
       validator: (String value) {
         if (value.isEmpty ||
             !RegExp(r'^(?:[1-9]\d*|0)?(?:[.,]\d+)?$').hasMatch(value))
@@ -96,10 +98,18 @@ class _ProductEditState extends State<ProductEdit> {
                     }
                     _formKey.currentState.save();
                     _formData['image'] = "assets/food.jpg";
-                    if(widget.product==null){
-                      widget.addProduct(_formData);
-                    }else{
-                      widget.updateProduct(widget.productIndex,_formData);
+                    if (widget.product == null) {
+                      widget.addProduct(Product(
+                          title: _formData['title'],
+                          description: _formData['description'],
+                          price: _formData['price'],
+                          image: _formData['image']));
+                    } else {
+                      widget.updateProduct(widget.productIndex, Product(
+                          title: _formData['title'],
+                          description: _formData['description'],
+                          price: _formData['price'],
+                          image: _formData['image']));
                     }
 
                     Navigator.pushReplacementNamed(context, '/home');

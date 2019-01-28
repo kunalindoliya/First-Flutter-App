@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 
+import '../../models/product.dart';
 import 'address_tag.dart';
 import 'price_tag.dart';
 
-class Product extends StatelessWidget {
-  final List<Map<String, dynamic>> products;
+class Products extends StatelessWidget {
+  final List<Product> products;
 
-  Product(this.products);
+  Products(this.products);
 
   Widget _buildProductItem(BuildContext context, int index) {
     return Card(
       child: Column(
         children: <Widget>[
-          Image.asset(products[index]["image"]),
+          Image.asset(products[index].image),
           Container(
             margin: EdgeInsets.only(top: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Text(
-                  products[index]["title"],
+                  products[index].title,
                   style: TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
@@ -28,7 +29,7 @@ class Product extends StatelessWidget {
                 SizedBox(
                   width: 8.0,
                 ),
-                PriceTag(products[index]['price'].toString()),
+                PriceTag(products[index].price.toString()),
               ],
             ),
           ),

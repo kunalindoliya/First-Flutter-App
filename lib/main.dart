@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import './models/product.dart';
 import './pages/auth.dart';
 import './pages/product.dart';
 import './pages/products.dart';
@@ -15,17 +16,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final List<Map<String, dynamic>> products = [];
+  final List<Product> products = [];
 
-  void _addProduct(Map<String, dynamic> productName) {
+  void _addProduct(Product product) {
     setState(() {
-      products.add(productName);
+      products.add(product);
     });
   }
 
-  void _updateProduct(int index,Map<String,dynamic> product){
+  void _updateProduct(int index, Product product) {
     setState(() {
-      products[index]=product;
+      products[index] = product;
     });
   }
 
@@ -44,13 +45,13 @@ class _MyAppState extends State<MyApp> {
           primarySwatch: Colors.deepOrange,
           accentColor: Colors.deepPurple
           //fontFamily: 'Oswald'
-        ),
+          ),
       //home: AuthPage(),
       routes: {
-        "/": (BuildContext context) =>
-            AuthPage(),
-        "/home":(BuildContext context)=>ProductsPage(products),
-        "/admin": (BuildContext context) => ProductAdminPage(_addProduct,_updateProduct, _deleteProduct,products),
+        "/": (BuildContext context) => AuthPage(),
+        "/home": (BuildContext context) => ProductsPage(products),
+        "/admin": (BuildContext context) => ProductAdminPage(
+            _addProduct, _updateProduct, _deleteProduct, products),
       },
       onGenerateRoute: (RouteSettings settings) {
         final List<String> pathElements = settings.name.split('/');
@@ -58,15 +59,17 @@ class _MyAppState extends State<MyApp> {
         if (pathElements[1] == 'product') {
           final int index = int.parse(pathElements[2]);
           return MaterialPageRoute<bool>(
-            builder: (BuildContext context) =>
-                ProductPage(products[index]),
+            builder: (BuildContext context) => ProductPage(
+                products[index].title,
+                products[index].image,
+                products[index].price,
+                products[index].description),
           );
         }
       },
       onUnknownRoute: (RouteSettings settings) {
         return MaterialPageRoute(
-            builder: (BuildContext context) =>
-                ProductsPage(products));
+            builder: (BuildContext context) => ProductsPage(products));
       },
     );
   }
