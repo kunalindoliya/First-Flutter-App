@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../models/product.dart';
+import '../scoped-models/products.dart';
 
 class ProductEdit extends StatefulWidget {
   final Function addProduct;
@@ -72,6 +74,19 @@ class _ProductEditState extends State<ProductEdit> {
     );
   }
 
+  Widget _buildSubmitButton(){
+    return ScopedModelDescendant<ProductsModel>(
+      builder: (BuildContext context, Widget child, ProductsModel model) {
+        return RaisedButton(
+          child: Text('Save'),
+          color: Theme.of(context).accentColor,
+          textColor: Colors.white,
+          onPressed: () => _submitForm(model.addProduct, model.updateProduct),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final Widget pageContent = GestureDetector(
@@ -87,35 +102,8 @@ class _ProductEditState extends State<ProductEdit> {
               _buildTitleTextField(),
               _buildDescriptionTextField(),
               _buildPriceTextField(),
-              Center(
-                child: RaisedButton(
-                  color: Theme.of(context).accentColor,
-                  textColor: Colors.white,
-                  child: Text("Save"),
-                  onPressed: () {
-                    if (!_formKey.currentState.validate()) {
-                      return;
-                    }
-                    _formKey.currentState.save();
-                    _formData['image'] = "assets/food.jpg";
-                    if (widget.product == null) {
-                      widget.addProduct(Product(
-                          title: _formData['title'],
-                          description: _formData['description'],
-                          price: _formData['price'],
-                          image: _formData['image']));
-                    } else {
-                      widget.updateProduct(widget.productIndex, Product(
-                          title: _formData['title'],
-                          description: _formData['description'],
-                          price: _formData['price'],
-                          image: _formData['image']));
-                    }
-
-                    Navigator.pushReplacementNamed(context, '/home');
-                  },
-                ),
-              )
+              SizedBox(height: 10.0,),
+              _buildSubmitButton(),
             ],
           ),
         ),
@@ -129,5 +117,27 @@ class _ProductEditState extends State<ProductEdit> {
             ),
             body: pageContent,
           );
+  }
+  void _submitForm(Function addProduct,Function updateProduct){
+    if (!_formKey.currentState.validate()) {
+      return;
+    }
+    _formKey.currentState.save();
+    _formData['image'] = "assets/food.jpg";
+    if (widget.product == null) {
+      addProduct(Product(
+          title: _formData['title'],
+          description: _formData['description'],
+          price: _formData['price'],
+          image: _formData['image']));
+    } else {
+      updateProduct(widget.productIndex, Product(
+          title: _formData['title'],
+          description: _formData['description'],
+          price: _formData['price'],
+          image: _formData['image']));
+    }
+
+    Navigator.pushReplacementNamed(context, '/home');
   }
 }

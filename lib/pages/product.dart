@@ -1,17 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
+import '../models/product.dart';
+import '../scoped-models/products.dart';
 import '../widgets/products/address_tag.dart';
 import '../widgets/products/price_tag.dart';
 
 class ProductPage extends StatelessWidget {
-  final String title;
-  final String imageUrl;
-  final double price;
-  final String description;
+  final int productIndex;
 
-  ProductPage(this.title, this.imageUrl, this.price, this.description);
+  ProductPage(this.productIndex);
 
   _showWarningDialog(BuildContext context) {
     showDialog(
@@ -46,75 +46,78 @@ class ProductPage extends StatelessWidget {
         Navigator.pop(context, false);
         return Future.value(false);
       },
-      child: Scaffold(
-          appBar: AppBar(
-            title: Text(title),
-          ),
-          body: Column(
-            children: <Widget>[
-              Image.asset(imageUrl),
-              Container(
-                  margin: EdgeInsets.only(top: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Text(
-                        title,
-                        style: TextStyle(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'oswald'),
-                      ),
-                      SizedBox(
-                        width: 8.0,
-                      ),
-                     PriceTag(price.toString())
-                    ],
-                  )),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text(
-                      "Description:",
-                      style: TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'oswald'),
-                    ),
-                    SizedBox(
-                      width: 20.0,
-                    ),
-                    Text(
-                      description,
-                      style: TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'oswald'),
-                    )
-                  ],
-                ),
+      child: ScopedModelDescendant<ProductsModel>(builder: (BuildContext context, Widget child, ProductsModel model){
+        final Product product=model.products[productIndex];
+          return  Scaffold(
+              appBar: AppBar(
+                title: Text(product.title),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              body: Column(
                 children: <Widget>[
-                 AddressTag("Delhi,India")
-                ],
-              ),
-              Container(
-                padding: EdgeInsets.all(10.0),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.delete,
-                    size: 30,
+                  Image.asset(product.image),
+                  Container(
+                      margin: EdgeInsets.only(top: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Text(
+                            product.title,
+                            style: TextStyle(
+                                fontSize: 22.0,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'oswald'),
+                          ),
+                          SizedBox(
+                            width: 8.0,
+                          ),
+                          PriceTag(product.price.toString())
+                        ],
+                      )),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text(
+                          "Description:",
+                          style: TextStyle(
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'oswald'),
+                        ),
+                        SizedBox(
+                          width: 20.0,
+                        ),
+                        Text(
+                          product.description,
+                          style: TextStyle(
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'oswald'),
+                        )
+                      ],
+                    ),
                   ),
-                  color: Colors.red,
-                  onPressed: () => _showWarningDialog(context),
-                ),
-              )
-            ],
-          )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      AddressTag("Delhi,India")
+                    ],
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(10.0),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.delete,
+                        size: 30,
+                      ),
+                      color: Colors.red,
+                      onPressed: () => _showWarningDialog(context),
+                    ),
+                  )
+                ],
+              ));
+      })
     );
   }
 }

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../models/product.dart';
 import '../widgets/products/products.dart';
 
 class ProductsPage extends StatelessWidget {
-  final List<Product> products;
-
-  ProductsPage(this.products);
 
   Widget _buildSideDrawer(BuildContext context){
     return Drawer(
@@ -35,7 +31,7 @@ class ProductsPage extends StatelessWidget {
         title: Text('All Products'),
         actions: <Widget>[IconButton(icon: Icon(Icons.favorite), onPressed: (){})],
       ),
-      body: Products(products),
+      body: Products(),
     );
   }
 }
