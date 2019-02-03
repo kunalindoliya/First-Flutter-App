@@ -23,11 +23,13 @@ class ProductsModel extends Model {
   void addProduct(Product product) {
     _products.add(product);
     _selectedProductIndex = null;
+    notifyListeners();
   }
 
   void updateProduct(Product product) {
     _products[_selectedProductIndex] = product;
     _selectedProductIndex = null;
+    notifyListeners();
   }
 
   void toggleProductFavoriteStatus() {
@@ -40,11 +42,14 @@ class ProductsModel extends Model {
         image: selectedProduct.image,
         isFavorite: newFavoriteStatus);
     _products[selectedProductIndex] = updateProduct;
+    _selectedProductIndex=null;
+    notifyListeners();
   }
 
   void deleteProduct() {
     _products.removeAt(_selectedProductIndex);
     _selectedProductIndex = null;
+    notifyListeners();
   }
 
   void selectProduct(int index) {
