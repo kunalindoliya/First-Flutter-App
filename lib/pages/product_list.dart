@@ -49,7 +49,7 @@ class ProductList extends StatelessWidget {
              Navigator.of(context).push(
                  MaterialPageRoute(builder: (BuildContext context) {
                    return ProductEdit();
-                 }));
+                 })).then((_)=>model.selectProduct(null));
            });
   }
 }
