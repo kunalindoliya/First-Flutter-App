@@ -18,14 +18,16 @@ mixin ConnectedProductsModel on Model {
       'description': description,
       'image':
           'https://img.huffingtonpost.com/asset/5b7d981c190000b606502692.jpeg?cache=Vbw27fsB2Q&ops=scalefit_720_noupscale',
-      'price': price
+      'price': price,
+      'userEmail': _authenticatedUser.email,
+      'userId': _authenticatedUser.id
     };
 
     http
         .post("https://flutter-products-fe71b.firebaseio.com/products.json",
             body: json.encode(productData))
         .then((http.Response response) {
-          final Map<String,dynamic> responseDate=json.decode(response.body);
+      final Map<String, dynamic> responseDate = json.decode(response.body);
       final Product newProduct = new Product(
           id: responseDate['name'],
           title: title,
@@ -79,6 +81,30 @@ mixin ProductsModel on ConnectedProductsModel {
         userId: selectedProduct.userId);
     _products[_selProductIndex] = updatedProduct;
     notifyListeners();
+  }
+
+  void fetchProducts() {
+    http
+        .get("https://flutter-products-fe71b.firebaseio.com/products.json")
+        .then((http.Response response) {
+      final Map<String, dynamic> productListData =
+          json.decode(response.body);
+      final List<Product> fetchedProductList=[];
+      productListData
+          .forEach((String productId, dynamic productData) {
+        final Product product = Product(
+            id: productId,
+            title: productData['title'],
+            description: productData['description'],
+            price: productData['price'],
+            image: productData['image'],
+            userEmail: productData['userEmail'],
+            userId: productData['userId']);
+            fetchedProductList.add(product);
+      });
+      _products=fetchedProductList;
+      notifyListeners();
+    });
   }
 
   void toggleProductFavoriteStatus() {
