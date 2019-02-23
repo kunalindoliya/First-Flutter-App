@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:scoped_model/scoped_model.dart';
 
 import '../models/product.dart';
@@ -10,18 +13,32 @@ mixin ConnectedProductsModel on Model {
 
   void addProduct(
       String title, String description, String image, double price) {
-    final Product newProduct = new Product(
-        title: title,
-        description: description,
-        image: image,
-        price: price,
-        userEmail: _authenticatedUser.email,
-        userId: _authenticatedUser.id);
-    _products.add(newProduct);
-    notifyListeners();
+    final Map<String, dynamic> productData = {
+      'title': title,
+      'description': description,
+      'image':
+          'https://img.huffingtonpost.com/asset/5b7d981c190000b606502692.jpeg?cache=Vbw27fsB2Q&ops=scalefit_720_noupscale',
+      'price': price
+    };
+
+    http
+        .post("https://flutter-products-fe71b.firebaseio.com/products.json",
+            body: json.encode(productData))
+        .then((http.Response response) {
+          final Map<String,dynamic> responseDate=json.decode(response.body);
+      final Product newProduct = new Product(
+          id: responseDate['name'],
+          title: title,
+          description: description,
+          image: image,
+          price: price,
+          userEmail: _authenticatedUser.email,
+          userId: _authenticatedUser.id);
+      _products.add(newProduct);
+      notifyListeners();
+    });
   }
 }
-
 
 mixin ProductsModel on ConnectedProductsModel {
   bool _showFavorites = false;
@@ -86,8 +103,7 @@ mixin ProductsModel on ConnectedProductsModel {
 
   void selectProduct(int index) {
     _selProductIndex = index;
-    if(index!=null)
-    notifyListeners();
+    if (index != null) notifyListeners();
   }
 
   void toggleDisplayMode() {
@@ -96,12 +112,8 @@ mixin ProductsModel on ConnectedProductsModel {
   }
 }
 
-mixin UserModel on ConnectedProductsModel{
-
-  void login(String email,String password){
-    _authenticatedUser=User(id: "hjakhkla", email: email, password: password);
+mixin UserModel on ConnectedProductsModel {
+  void login(String email, String password) {
+    _authenticatedUser = User(id: "hjakhkla", email: email, password: password);
   }
 }
-
-
-
