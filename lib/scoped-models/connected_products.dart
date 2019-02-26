@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -10,11 +11,12 @@ mixin ConnectedProductsModel on Model {
   List<Product> _products = [];
   User _authenticatedUser;
   int _selProductIndex;
-  bool _isLoading=false;
+  bool _isLoading= false;
 
-  void addProduct(
-      String title, String description, String image, double price) {
+  Future<Null> addProduct(
+      String title, String description, String image, double price){
     _isLoading=true;
+    notifyListeners();
     final Map<String, dynamic> productData = {
       'title': title,
       'description': description,
@@ -25,7 +27,7 @@ mixin ConnectedProductsModel on Model {
       'userId': _authenticatedUser.id
     };
 
-    http
+    return http
         .post("https://flutter-products-fe71b.firebaseio.com/products.json",
             body: json.encode(productData))
         .then((http.Response response) {
@@ -88,12 +90,19 @@ mixin ProductsModel on ConnectedProductsModel {
 
   void fetchProducts() {
     _isLoading=true;
+    notifyListeners();
     http
         .get("https://flutter-products-fe71b.firebaseio.com/products.json")
         .then((http.Response response) {
+          print(json.decode(response.body));
       final Map<String, dynamic> productListData =
           json.decode(response.body);
       final List<Product> fetchedProductList=[];
+      if(productListData==null){
+        _isLoading=false;
+        notifyListeners();
+        return;
+      }
       productListData
           .forEach((String productId, dynamic productData) {
         final Product product = Product(
@@ -107,6 +116,7 @@ mixin ProductsModel on ConnectedProductsModel {
             fetchedProductList.add(product);
       });
       _products=fetchedProductList;
+      print(fetchedProductList.length);
       _isLoading=false;
       notifyListeners();
     });

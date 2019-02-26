@@ -67,13 +67,18 @@ class _ProductEditState extends State<ProductEdit> {
   Widget _buildSubmitButton() {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget child, MainModel model) {
-        return RaisedButton(
-          child: Text('Save'),
-          color: Theme.of(context).accentColor,
-          textColor: Colors.white,
-          onPressed: () => _submitForm(model.addProduct, model.updateProduct,
-              model.selectProduct, model.selectedProductIndex),
-        );
+        return model.isLoading
+            ? Center(child:CircularProgressIndicator())
+            : RaisedButton(
+                child: Text('Save'),
+                color: Theme.of(context).accentColor,
+                textColor: Colors.white,
+                onPressed: () => _submitForm(
+                    model.addProduct,
+                    model.updateProduct,
+                    model.selectProduct,
+                    model.selectedProductIndex),
+              );
       },
     );
   }
@@ -128,16 +133,18 @@ class _ProductEditState extends State<ProductEdit> {
       return;
     }
     _formKey.currentState.save();
-    _formData['image'] = "assets/food.jpg";
     if (selectedProductIndex == null) {
-      addProduct(_formData['title'], _formData['description'],
-          _formData['image'], _formData['price']);
+      addProduct(
+        _formData['title'],
+        _formData['description'],
+        _formData['image'],
+        _formData['price'],
+      ).then((_) => Navigator
+          .pushReplacementNamed(context, '/products')
+          .then((_) => setSelectedProduct(null)));
     } else {
       updateProduct(_formData['title'], _formData['description'],
           _formData['image'], _formData['price']);
     }
-
-    Navigator.pushReplacementNamed(context, '/home')
-        .then((_) => setSelectedProduct(null));
   }
 }
