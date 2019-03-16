@@ -77,7 +77,7 @@ mixin ProductsModel on ConnectedProductsModel {
 
   Future<Null> updateProduct(
       String title, String description, String image, double price) {
-    _isLoading=true;
+    _isLoading = true;
     notifyListeners();
     final Map<String, dynamic> updateData = {
       'title': title,
@@ -89,22 +89,23 @@ mixin ProductsModel on ConnectedProductsModel {
       'userId': selectedProduct.userId
     };
 
-    return http.put(
-        "https://flutter-products-fe71b.firebaseio.com/products/${selectedProduct.id}.json",
-        body: jsonEncode(updateData)).then((http.Response response){
-          _isLoading=false;
-          final Product updatedProduct = new Product(
-              id: selectedProduct.id,
-              title: title,
-              description: description,
-              image: image,
-              price: price,
-              userEmail: selectedProduct.userEmail,
-              userId: selectedProduct.userId);
-          _products[_selProductIndex] = updatedProduct;
-          notifyListeners();
+    return http
+        .put(
+            "https://flutter-products-fe71b.firebaseio.com/products/${selectedProduct.id}.json",
+            body: jsonEncode(updateData))
+        .then((http.Response response) {
+      _isLoading = false;
+      final Product updatedProduct = new Product(
+          id: selectedProduct.id,
+          title: title,
+          description: description,
+          image: image,
+          price: price,
+          userEmail: selectedProduct.userEmail,
+          userId: selectedProduct.userId);
+      _products[_selProductIndex] = updatedProduct;
+      notifyListeners();
     });
-
   }
 
   void fetchProducts() {
@@ -153,8 +154,18 @@ mixin ProductsModel on ConnectedProductsModel {
   }
 
   void deleteProduct() {
+    _isLoading = true;
+    final deletedProductId=selectedProduct.id;
     _products.removeAt(_selProductIndex);
+    _selProductIndex=null;
     notifyListeners();
+    http
+        .delete(
+            "https://flutter-products-fe71b.firebaseio.com/products/${deletedProductId}.json")
+        .then((http.Response response) {
+      _isLoading = false;
+      notifyListeners();
+    });
   }
 
   void selectProduct(int index) {
