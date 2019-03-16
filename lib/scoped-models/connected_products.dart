@@ -11,11 +11,11 @@ mixin ConnectedProductsModel on Model {
   List<Product> _products = [];
   User _authenticatedUser;
   int _selProductIndex;
-  bool _isLoading= false;
+  bool _isLoading = false;
 
   Future<Null> addProduct(
-      String title, String description, String image, double price){
-    _isLoading=true;
+      String title, String description, String image, double price) {
+    _isLoading = true;
     notifyListeners();
     final Map<String, dynamic> productData = {
       'title': title,
@@ -31,9 +31,9 @@ mixin ConnectedProductsModel on Model {
         .post("https://flutter-products-fe71b.firebaseio.com/products.json",
             body: json.encode(productData))
         .then((http.Response response) {
-      final Map<String, dynamic> responseDate = json.decode(response.body);
+      final Map<String, dynamic> responseData = json.decode(response.body);
       final Product newProduct = new Product(
-          id: responseDate['name'],
+          id: responseData['name'],
           title: title,
           description: description,
           image: image,
@@ -41,7 +41,7 @@ mixin ConnectedProductsModel on Model {
           userEmail: _authenticatedUser.email,
           userId: _authenticatedUser.id);
       _products.add(newProduct);
-      _isLoading=false;
+      _isLoading = false;
       notifyListeners();
     });
   }
@@ -75,36 +75,52 @@ mixin ProductsModel on ConnectedProductsModel {
     return _products[_selProductIndex];
   }
 
-  void updateProduct(
+  Future<Null> updateProduct(
       String title, String description, String image, double price) {
-    final Product updatedProduct = new Product(
-        title: title,
-        description: description,
-        image: image,
-        price: price,
-        userEmail: selectedProduct.userEmail,
-        userId: selectedProduct.userId);
-    _products[_selProductIndex] = updatedProduct;
+    _isLoading=true;
     notifyListeners();
+    final Map<String, dynamic> updateData = {
+      'title': title,
+      'description': description,
+      'image':
+          'https://img.huffingtonpost.com/asset/5b7d981c190000b606502692.jpeg?cache=Vbw27fsB2Q&ops=scalefit_720_noupscale',
+      'price': price,
+      'userEmail': selectedProduct.userEmail,
+      'userId': selectedProduct.userId
+    };
+
+    return http.put(
+        "https://flutter-products-fe71b.firebaseio.com/products/${selectedProduct.id}.json",
+        body: jsonEncode(updateData)).then((http.Response response){
+          _isLoading=false;
+          final Product updatedProduct = new Product(
+              id: selectedProduct.id,
+              title: title,
+              description: description,
+              image: image,
+              price: price,
+              userEmail: selectedProduct.userEmail,
+              userId: selectedProduct.userId);
+          _products[_selProductIndex] = updatedProduct;
+          notifyListeners();
+    });
+
   }
 
   void fetchProducts() {
-    _isLoading=true;
+    _isLoading = true;
     notifyListeners();
     http
         .get("https://flutter-products-fe71b.firebaseio.com/products.json")
         .then((http.Response response) {
-          print(json.decode(response.body));
-      final Map<String, dynamic> productListData =
-          json.decode(response.body);
-      final List<Product> fetchedProductList=[];
-      if(productListData==null){
-        _isLoading=false;
+      final Map<String, dynamic> productListData = json.decode(response.body);
+      final List<Product> fetchedProductList = [];
+      if (productListData == null) {
+        _isLoading = false;
         notifyListeners();
         return;
       }
-      productListData
-          .forEach((String productId, dynamic productData) {
+      productListData.forEach((String productId, dynamic productData) {
         final Product product = Product(
             id: productId,
             title: productData['title'],
@@ -113,11 +129,10 @@ mixin ProductsModel on ConnectedProductsModel {
             image: productData['image'],
             userEmail: productData['userEmail'],
             userId: productData['userId']);
-            fetchedProductList.add(product);
+        fetchedProductList.add(product);
       });
-      _products=fetchedProductList;
-      print(fetchedProductList.length);
-      _isLoading=false;
+      _products = fetchedProductList;
+      _isLoading = false;
       notifyListeners();
     });
   }
@@ -159,8 +174,8 @@ mixin UserModel on ConnectedProductsModel {
   }
 }
 
-mixin UtilityModel on ConnectedProductsModel{
-  bool get isLoading{
+mixin UtilityModel on ConnectedProductsModel {
+  bool get isLoading {
     return _isLoading;
   }
 }
