@@ -43,31 +43,32 @@ class ProductCard extends StatelessWidget {
           ),
           AddressTag("Delhi,India"),
           Text(product.userEmail),
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: <Widget>[
-              IconButton(
-                color: Theme.of(context).accentColor,
-                icon: Icon(
-                  Icons.info,
-                  size: 30.0,
-                ),
-                onPressed: () => Navigator.pushNamed<bool>(
-                    context, '/product/' + productIndex.toString()),
-              ),
-              ScopedModelDescendant<MainModel>(builder:
-                  (BuildContext context, Widget child, MainModel model) {
-                return IconButton(
-                    icon: Icon(model.allProducts[productIndex].isFavorite
-                        ? Icons.favorite
-                        : Icons.favorite_border),
-                    color: Colors.red,
-                    onPressed: () {
-                      model.selectProduct(productIndex);
-                      model.toggleProductFavoriteStatus();
-                    });
-              })
-            ],
+          ScopedModelDescendant<MainModel>(
+            builder: (BuildContext context, Widget child, MainModel model) {
+              return ButtonBar(
+                  alignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    IconButton(
+                      color: Theme.of(context).accentColor,
+                      icon: Icon(
+                        Icons.info,
+                        size: 30.0,
+                      ),
+                      onPressed: () => Navigator.pushNamed<bool>(
+                          context, '/product/' + model.allProducts[productIndex].id),
+                    ),
+                    IconButton(
+                        icon: Icon(model.allProducts[productIndex].isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border),
+                        color: Colors.red,
+                        onPressed: () {
+                          model.selectProduct(
+                              model.allProducts[productIndex].id);
+                          model.toggleProductFavoriteStatus();
+                        })
+                  ]);
+            },
           )
         ],
       ),

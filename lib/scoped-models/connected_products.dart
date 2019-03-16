@@ -10,7 +10,7 @@ import '../models/user.dart';
 mixin ConnectedProductsModel on Model {
   List<Product> _products = [];
   User _authenticatedUser;
-  int _selProductIndex;
+  String _selProductId;
   bool _isLoading = false;
 
   Future<Null> addProduct(
@@ -62,17 +62,25 @@ mixin ProductsModel on ConnectedProductsModel {
     return List<Product>.from(_products);
   }
 
-  int get selectedProductIndex {
-    return _selProductIndex;
+  String get selectedProductId {
+    return _selProductId;
   }
 
   bool get displayFavoritesOnly {
     return _showFavorites;
   }
 
+  int get selectedProductIndex {
+    return _products.indexWhere((Product product) {
+      return product.id == _selProductId;
+    });
+  }
+
   Product get selectedProduct {
-    if (_selProductIndex == null) return null;
-    return _products[_selProductIndex];
+    if (_selProductId == null) return null;
+    return _products.firstWhere((Product product) {
+      return product.id == _selProductId;
+    });
   }
 
   Future<Null> updateProduct(
@@ -103,12 +111,12 @@ mixin ProductsModel on ConnectedProductsModel {
           price: price,
           userEmail: selectedProduct.userEmail,
           userId: selectedProduct.userId);
-      _products[_selProductIndex] = updatedProduct;
+      _products[selectedProductIndex] = updatedProduct;
       notifyListeners();
     });
   }
 
-   Future<Null> fetchProducts() {
+  Future<Null> fetchProducts() {
     _isLoading = true;
     notifyListeners();
     return http
@@ -135,6 +143,7 @@ mixin ProductsModel on ConnectedProductsModel {
       _products = fetchedProductList;
       _isLoading = false;
       notifyListeners();
+      _selProductId=null;
     });
   }
 
@@ -142,6 +151,7 @@ mixin ProductsModel on ConnectedProductsModel {
     final bool isCurrentlyFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentlyFavorite;
     final Product updateProduct = Product(
+        id: selectedProduct.id,
         title: selectedProduct.title,
         description: selectedProduct.description,
         price: selectedProduct.price,
@@ -149,28 +159,31 @@ mixin ProductsModel on ConnectedProductsModel {
         isFavorite: newFavoriteStatus,
         userEmail: selectedProduct.userEmail,
         userId: selectedProduct.userId);
-    _products[_selProductIndex] = updateProduct;
+    _products[selectedProductIndex] = updateProduct;
     notifyListeners();
   }
 
   void deleteProduct() {
     _isLoading = true;
-    final deletedProductId=selectedProduct.id;
-    _products.removeAt(_selProductIndex);
-    _selProductIndex=null;
+    final deletedProductId = selectedProduct.id;
+    final int selectedProductIndex = _products.indexWhere((Product product) {
+      return product.id == _selProductId;
+    });
+    _products.removeAt(selectedProductIndex);
+    _selProductId = null;
     notifyListeners();
     http
         .delete(
-            "https://flutter-products-fe71b.firebaseio.com/products/${deletedProductId}.json")
+            "https://flutter-products-fe71b.firebaseio.com/products/$deletedProductId.json")
         .then((http.Response response) {
       _isLoading = false;
       notifyListeners();
     });
   }
 
-  void selectProduct(int index) {
-    _selProductIndex = index;
-    if (index != null) notifyListeners();
+  void selectProduct(String productId) {
+    _selProductId = productId;
+    if (productId != null) notifyListeners();
   }
 
   void toggleDisplayMode() {
